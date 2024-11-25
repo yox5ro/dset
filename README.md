@@ -19,9 +19,9 @@ Usage:
 
 Available Commands:
   help        Help about any command
-  intersect   A brief description of your command
-  subtract    A brief description of your command
-  union       A brief description of your command
+  intersect   Perform set intersection on lexicographically sorted text files.
+  subtract    Perform set subtraction on lexicographically sorted text files.
+  union       Perform set union on lexicographically sorted text files.
 
 Flags:
   -h, --help   help for dset
