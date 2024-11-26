@@ -52,7 +52,7 @@ func WrapIsSorted(filename string) (io.Reader, error) {
 	}
 	f.Close()
 
-	f, err = os.Open(filename)
+	f, err = OpenFile(filename)
 	if err != nil {
 		return nil, err
 	}
