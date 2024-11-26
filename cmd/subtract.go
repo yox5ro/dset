@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -27,21 +26,7 @@ deet subtract file1.txt file2.txt
 			fmt.Fprintf(os.Stderr, "Specify two files to subtract, got %d files\n", len(args))
 			os.Exit(1)
 		}
-		var minuendFile io.ReadSeekCloser
-		minuendFile, err := os.Open(args[0])
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			return
-		}
-		defer minuendFile.Close()
-		var subtrahendFile io.ReadSeekCloser
-		subtrahendFile, err = os.Open(args[1])
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			return
-		}
-		defer subtrahendFile.Close()
-		if err := internal.Subtract(os.Stdout, minuendFile, subtrahendFile); err != nil {
+		if err := internal.SubtractWrapper(os.Stdout, args[0], args[1]); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 	},

@@ -19,16 +19,16 @@ func TestSubtract(t *testing.T) {
 		want            string
 	}{
 		{
-			name: "no overlap",
-			inputMinuend: *strings.NewReader("1\n2\n3\n"),
+			name:            "no overlap",
+			inputMinuend:    *strings.NewReader("1\n2\n3\n"),
 			inputSubtrahend: *strings.NewReader("4\n5\n6\n"),
-			want: "1\n2\n3\n",
+			want:            "1\n2\n3\n",
 		},
 		{
-			name: "overlap",
-			inputMinuend: *strings.NewReader("1\n2\n3\n"),
+			name:            "overlap",
+			inputMinuend:    *strings.NewReader("1\n2\n3\n"),
 			inputSubtrahend: *strings.NewReader("2\n3\n4\n"),
-			want: "1\n",
+			want:            "1\n",
 		},
 	}
 

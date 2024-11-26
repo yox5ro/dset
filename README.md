@@ -2,6 +2,8 @@
 
 Perform set operations (intersection, union, subtraction) on lexicographically sorted text files without Out Of Memory error.
 
+dset works with text file and gzipped text file.
+
 ## Installation
 
 ```bash

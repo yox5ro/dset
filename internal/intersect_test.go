@@ -13,16 +13,18 @@ func TestIntersect(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name  string
-		input []strings.Reader
-		want  string
+		name     string
+		input    []strings.Reader
+		tmpUnion strings.Reader
+		want     string
 	}{
 		{
 			name: "single file",
 			input: []strings.Reader{
 				*strings.NewReader("1\n2\n3\n"),
 			},
-			want: "1\n2\n3\n",
+			tmpUnion: *strings.NewReader("1\n2\n3\n"),
+			want:     "1\n2\n3\n",
 		},
 		{
 			name: "two files",
@@ -30,7 +32,8 @@ func TestIntersect(t *testing.T) {
 				*strings.NewReader("1\n2\n3\n"),
 				*strings.NewReader("2\n3\n4\n"),
 			},
-			want: "2\n3\n",
+			tmpUnion: *strings.NewReader("1\n2\n3\n4\n"),
+			want:     "2\n3\n",
 		},
 		{
 			name: "three files",
@@ -39,7 +42,8 @@ func TestIntersect(t *testing.T) {
 				*strings.NewReader("2\n3\n4\n"),
 				*strings.NewReader("3\n4\n5\n"),
 			},
-			want: "3\n",
+			tmpUnion: *strings.NewReader("1\n2\n3\n4\n5\n"),
+			want:     "3\n",
 		},
 		{
 			name: "no overlap",
@@ -48,7 +52,8 @@ func TestIntersect(t *testing.T) {
 				*strings.NewReader("4\n5\n6\n"),
 				*strings.NewReader("7\n8\n9\n"),
 			},
-			want: "",
+			tmpUnion: *strings.NewReader("1\n2\n3\n4\n5\n6\n7\n8\n9\n"),
+			want:     "",
 		},
 		{
 			name: "empty files",
@@ -57,7 +62,8 @@ func TestIntersect(t *testing.T) {
 				*strings.NewReader(""),
 				*strings.NewReader(""),
 			},
-			want: "",
+			tmpUnion: *strings.NewReader(""),
+			want:     "",
 		},
 	}
 
@@ -65,11 +71,12 @@ func TestIntersect(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			got := strings.Builder{}
-			readers := make([]io.ReadSeeker, len(tt.input))
+			readers := make([]io.Reader, len(tt.input))
 			for i, input := range tt.input {
 				readers[i] = &input
 			}
-			if err := internal.Intersect(&got, readers...); err != nil {
+			tmpUnion := &tt.tmpUnion
+			if err := internal.Intersect(&got, tmpUnion, readers...); err != nil {
 				t.Errorf("Intersect() error = %v", err)
 				return
 			}

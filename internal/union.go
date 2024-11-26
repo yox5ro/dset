@@ -6,14 +6,19 @@ import (
 	"strings"
 )
 
-func Union(w io.Writer, readers ...io.ReadSeeker) error {
-	for _, reader := range readers {
-		if !IsSorted(reader) {
-			return ErrInputNotSorted
+func UnionWrapper(w io.Writer, filenames ...string) error {
+	readers := make([]io.Reader, len(filenames))
+	for i, filename := range filenames {
+		reader, err := WrapIsSorted(filename)
+		if err != nil {
+			return err
 		}
-		reader.Seek(0, io.SeekStart)
+		readers[i] = reader
 	}
+	return Union(w, readers...)
+}
 
+func Union(w io.Writer, readers ...io.Reader) error {
 	bufWriter := bufio.NewWriter(w)
 	defer bufWriter.Flush()
 

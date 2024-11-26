@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -23,21 +22,7 @@ Example:
 dset union file1.txt file2.txt file3.txt
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		files := make([]*os.File, len(args))
-		for i, arg := range args {
-			file, err := os.Open(arg)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				return
-			}
-			files[i] = file
-			defer file.Close()
-		}
-		readers := make([]io.ReadSeeker, len(files))
-		for i, file := range files {
-			readers[i] = file
-		}
-		if err := internal.Union(os.Stdout, readers...); err != nil {
+		if err := internal.UnionWrapper(os.Stdout, args...); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 	},

@@ -6,13 +6,21 @@ import (
 	"strings"
 )
 
-func Subtract(w io.Writer, minuend io.ReadSeeker, subtrahend io.ReadSeeker) error {
-	if !IsSorted(minuend) || !IsSorted(subtrahend) {
-		return ErrInputNotSorted
+func SubtractWrapper(w io.Writer, minuendFilename, subtrahendFilename string) error {
+	minuendReader, err := WrapIsSorted(minuendFilename)
+	if err != nil {
+		return err
 	}
 
-	minuend.Seek(0, io.SeekStart)
-	subtrahend.Seek(0, io.SeekStart)
+	subtrahendReader, err := WrapIsSorted(subtrahendFilename)
+	if err != nil {
+		return err
+	}
+
+	return Subtract(w, minuendReader, subtrahendReader)
+}
+
+func Subtract(w io.Writer, minuend io.Reader, subtrahend io.Reader) error {
 	bufWriter := bufio.NewWriter(w)
 	defer bufWriter.Flush()
 
@@ -39,7 +47,7 @@ func Subtract(w io.Writer, minuend io.ReadSeeker, subtrahend io.ReadSeeker) erro
 			}
 			currentSubtrahendString = strings.TrimSpace(s)
 		}
-		
+
 		if currentMinuendString != currentSubtrahendString {
 			if _, err := bufWriter.WriteString(currentMinuendString + "\n"); err != nil {
 				return err

@@ -7,20 +7,28 @@ import (
 	"strings"
 )
 
-func Intersect(w io.Writer, readers ...io.ReadSeeker) error {
+func IntersectWrapper(w io.Writer, filenames ...string) error {
 	f, err := os.CreateTemp("", "intersect")
 	if err != nil {
 		return err
 	}
 	defer os.Remove(f.Name())
-	if err := Union(f, readers...); err != nil {
+	if err := UnionWrapper(f, filenames...); err != nil {
 		return err
 	}
 	f.Seek(0, io.SeekStart)
 
-	for _, reader := range readers {
-		reader.Seek(0, io.SeekStart)
+	readers := make([]io.Reader, len(filenames))
+	for i := range filenames {
+		readers[i], err = OpenFile(filenames[i])
+		if err != nil {
+			return err
+		}
 	}
+	return Intersect(w, f, readers...)
+}
+
+func Intersect(w io.Writer, tmpFileReader io.Reader, readers ...io.Reader) error {
 	bufWriter := bufio.NewWriter(w)
 	defer bufWriter.Flush()
 
@@ -30,7 +38,7 @@ func Intersect(w io.Writer, readers ...io.ReadSeeker) error {
 	}
 	currentStrings := make([]string, len(readers))
 
-	tmpReader := bufio.NewReader(f)
+	tmpReader := bufio.NewReader(tmpFileReader)
 
 	for {
 		s, err := tmpReader.ReadString('\n')

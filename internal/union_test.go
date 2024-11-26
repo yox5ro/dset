@@ -65,7 +65,7 @@ func TestUnion(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			got := strings.Builder{}
-			readers := make([]io.ReadSeeker, len(tt.input))
+			readers := make([]io.Reader, len(tt.input))
 			for i, input := range tt.input {
 				readers[i] = &input
 			}
