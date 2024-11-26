@@ -15,5 +15,5 @@ go build
 ## Testing
 
 ```sh
-go test
+go test ./...
 ```
